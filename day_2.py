@@ -12,7 +12,7 @@ puzzle = re.findall(r'[^._]+', os.path.basename(__file__))
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument('-input', help='URL of puzzle input',
     default=f"https://adventofcode.com/2020/{puzzle[0]}/{puzzle[1]}/input")
-parser.add_argument('-official', type=bool, default=False,
+parser.add_argument('-official', action='store_true',
     help='apply "official" (as opposed to "old") interpretation of password database entries')
 args = parser.parse_args()
 
