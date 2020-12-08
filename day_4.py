@@ -17,7 +17,7 @@ def valid(record, check):
 
 
 def main(input, check):
-    candidates = [{fld[0]: fld[1] for fld in map(lambda s: s.split(':'), rec.split())} for rec in re.split(r'^\s*$', input.text, flags=re.MULTILINE)]
+    candidates = [dict(fld.split(':') for fld in rec.split()) for rec in re.split(r'^\s*$', input.text, flags=re.MULTILINE)]
     passports = [rec for rec in candidates if valid(rec, check)]
     return len(passports)
 
