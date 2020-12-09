@@ -8,12 +8,27 @@ import browsercookie
 import requests
 
 
-def valid(record, check):
+def valid(rec, check):
     min_flds_in_valid_rec = {'byr', 'iyr', 'eyr', 'hgt', 'hcl', 'ecl', 'pid'}
-    if check:
-        pass
-    else:
-        return all(fld in record for fld in min_flds_in_valid_rec)
+    if not all(fld in rec for fld in min_flds_in_valid_rec):
+        return False
+    if not check:
+        return True
+    if not re.fullmatch(r'\d{9}', rec['pid']):
+        return False
+    if not re.fullmatch(r'#[0-9a-fA-F]{6}', rec['hcl']):
+        return False
+    if not re.fullmatch(r'(amb|blu|brn|gry|grn|hzl|oth)', rec['ecl']):
+        return False
+    if not re.fullmatch(r'1([5-8][0-9]|9[0-3])cm|(59|6[0-9]|7[0-6])in', rec['hgt']):
+        return False
+    if not (re.fullmatch(r'\d{4}', rec['byr']) and 1920 <= int(rec['byr']) <= 2002):
+        return False
+    if not (re.fullmatch(r'\d{4}', rec['iyr']) and 2010 <= int(rec['iyr']) <= 2020):
+        return False
+    if not (re.fullmatch(r'\d{4}', rec['eyr']) and 2020 <= int(rec['eyr']) <= 2030):
+        return False
+    return True
 
 
 def main(input, check):
