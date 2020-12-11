@@ -12,7 +12,7 @@ def up(input, targets, holders=None):
     if not holders:
         holders = set()
     new_holders = set()
-    for line in input.text.splitlines():
+    for line in input.splitlines():
         container, contents = line.split('contain')
         for t in targets:
             if t in contents:
@@ -26,7 +26,17 @@ def up(input, targets, holders=None):
 
 
 def down(input, target):
-    pass
+    result = 0
+    for line in input.splitlines():
+        if line.startswith(target):
+            for bags in line.split('contai')[1].split('bag'):
+                bags = bags.split()
+                if len(bags) > 1:
+                    mult = bags[1]
+                    bag = ' '.join(bags[2:])
+                    if mult != 'no':
+                        result += int(mult) * (1 + down(input, bag))
+    return result
 
 
 if __name__ == '__main__':
@@ -40,7 +50,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     jar = browsercookie.load()
-    input = requests.get(args.input, cookies=jar)
+    input = requests.get(args.input, cookies=jar).text
 
     if not args.down:
         print(len(up(input, {args.target})))
