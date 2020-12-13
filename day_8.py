@@ -8,15 +8,28 @@ import browsercookie
 import requests
 
 
-def run(input):
-    tape = [dict(inst=i, arg=int(a)) for i, a in map(lambda l: l.split(), input.splitlines())]
+def run(tape):
     ip = 0
     acc = 0
-    while tape[ip].setdefault('visits', 0) < 1:
-        tape[ip]['visits'] += 1
+    visited = set()
+    while ip < len(tape) and ip not in visited:
+        visited.add(ip)
         acc += {'acc': tape[ip]['arg']}.get(tape[ip]['inst'], 0)
         ip += {'jmp': tape[ip]['arg']}.get(tape[ip]['inst'], 1)
-    return acc
+    return ip, acc
+
+def main(input, fix):
+    tape = [dict(inst=i, arg=int(a)) for i, a in map(lambda l: l.split(), input.splitlines())]
+    if not fix:
+        return run(tape)[1]
+    swap = {'jmp': 'nop', 'nop': 'jmp'}
+    for cmd in tape:
+        if cmd['inst'] in swap:
+            cmd['inst'] = swap[cmd['inst']]
+            ip, acc = run(tape)
+            cmd['inst'] = swap[cmd['inst']]
+            if ip == len(tape):
+                return acc
 
 
 if __name__ == '__main__':
@@ -25,9 +38,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('-input', help='URL of puzzle input',
         default=f"https://adventofcode.com/2020/{puzzle[0]}/{puzzle[1]}/input")
+    parser.add_argument('-fix', action='store_true', help='report accumulator after fixing courruption (instead of before second iteration of infinite loop)')
     args = parser.parse_args()
 
     jar = browsercookie.load()
     input = requests.get(args.input, cookies=jar).text
 
-    print(run(input))
+    print(main(input, args.fix))
